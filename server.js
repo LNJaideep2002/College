@@ -238,6 +238,8 @@ app.get("/addteacher",function(req,res)
 });
 app.post("/aaddteacherdata",async function(req,res)
 {
+    var new1=req.body.new;
+    if(new1==undefined)
     req.body={...req.body,new:"off"};
     var sem=req.body.semester.split(" ")[0]+req.body.semester.split(" ")[1];
     var sub=""+req.body.batch+"#"+sem+"#"+req.body.subject;
@@ -249,41 +251,29 @@ app.post("/aaddteacherdata",async function(req,res)
         });
     }
     else{
-        var newmodel={};
-        newmodel.username="sam2021";
-        newmodel.email="sam@gmail.com";
-        newmodel.name="sam";
-        newmodel.post="asss";
-        newmodel.subject=["2018-2022#Semester2#Technical English"];
-        console.log(newmodel);
-        model_teacher.create({...newmodel},function(err)
-        {
-            console.log("saved");
-        });
-        // var teacher=new model_teacher(newmodel);
-        // var login1={
-        //     username:"",
-        //     password:"",
-        //     email:""
-        // };
-        // login1[username]=req.body.uname;
-        // login1[password]=req.body.pass;
-        // login1[email]=req.body.email;
-        // var login=new model_login(login1);
-        // try{
-        //     login.save(function()
-        //     {
-        //         console.log("save");
-        //     });
-        //     teacher.save(function()
-        //     {
+        var teacher=new model_teacher();
+        teacher.username=req.body.uname;
+        teacher.email=req.body.email;
+        teacher.name=req.body.name;
+        teacher.post=req.body.post;
+        teacher.subject=[sub];
+        var login=new model_login();
+        login.username=req.body.uname;
+        login.password=req.body.pass;
+        login.email=req.body.email;
+        try{
+            login.save(function()
+            {
+            });
+            teacher.save(function()
+            {
                 
-        //     });
-        //     res.render("aaddtecher",{st:0,username:user.username});
-        // }
-        // catch(err)
-        // {
-        //     res.render("aaddtecher",{st:1,username:user.username});
-        // }
+            });
+            res.render("aaddtecher",{st:0,username:user.username});
+        }
+        catch(err)
+        {
+            res.render("aaddtecher",{st:1,username:user.username});
+        }
     }
 });
