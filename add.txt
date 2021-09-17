@@ -1,0 +1,24 @@
+        var teacher=new model_teacher();
+        teacher.username=req.body.uname;
+        teacher.email=req.body.email;
+        teacher.name=req.body.name;
+        teacher.post=req.body.post;
+        teacher.subject=[sub];
+        var login=new model_login();
+        login.username=req.body.uname;
+        login.password=req.body.pass;
+        login.email=req.body.email;
+        try{
+            login.save(function()
+            {
+            });
+            teacher.save(function()
+            {
+                
+            });
+            res.render("aaddtecher",{st:0,username:user.username});
+        }
+        catch(err)
+        {
+            res.render("aaddtecher",{st:1,username:user.username});
+        }
