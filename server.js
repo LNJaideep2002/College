@@ -17,8 +17,6 @@ var model_teacher=mongoose.model('teacher',schema_teacher);
 var schema_batch=mongoose.Schema({Semester: Number,exam: Array,file: Array});
 var model_batch=mongoose.model('batch',schema_batch);
 app.use(express.static('public'));
-mongoose.set('useFindAndModify', false);
-mongoose.set('useCreateIndex', true);
 app.set('view engine','ejs');
 var user={
     username:"",
@@ -197,8 +195,13 @@ app.post("/uploading",function(req,res) {
     var file=req.files.file;
     console.log(file.name);
     console.log(Number(req.body.semester.split(" ")[1]));
-    var filename=""+user.username+"#"+req.body.batch+"#"+req.body.semester+"#"+req.body.subject+"#"+req.body.exam+".xlsx";
-    file.mv("./files/"+filename,function(err){
+    if(req.body.pos==undefined)
+    {
+        var filename=""+user.username+"_"+req.body.batch+"_"+req.body.semester+"_"+req.body.subject+"_"+req.body.exam+".xlsx";   
+    }
+    else
+    var filename=""+user.username+"_"+req.body.batch+"_"+req.body.semester+"_"+req.body.subject+"_"+"pos.xlsx";
+    file.mv("./public/"+filename,function(err){
         model_batch.findOneAndUpdate({Semester:Number(req.body.semester.split(" ")[1])},{$push:{file:filename}},{upsert: true},function()
         {
             var batch=[];
