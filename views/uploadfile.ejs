@@ -42,6 +42,9 @@
           <div class="upload">
               <h3>Upload file</h3>
               <form action="uploading" method="POST" enctype="multipart/form-data">
+                <label for="st" style="margin-left: 15%;position: relative;top: -10px;">Pos File:</label>
+                <input type="checkbox" style="position: relative;top: 5px;" id="pos" autocomplete="off" name="pos">
+                <br>
                 <label for="batch">Batch :</label>
                 <input type="text" list="batch0" id="batch" autocomplete="off" name="batch" required="required">
                 <datalist id="batch0">
@@ -74,7 +77,6 @@
                 <datalist id="exa0"></datalist>
                 <br>
                 <input type="file" id="file" accept=".xlsx" name="file" required="required">
-           
                 <button type="submit">Submit</button>
             </form>
           </div>
@@ -97,6 +99,7 @@
         document.getElementById("sem").setAttribute("disabled","disabled");
         });
         var sem;
+        var pos=0;
         document.getElementById("sem").addEventListener("keyup",function(){
         sem=document.getElementById("sem").value;
         if(document.getElementById("sem").value.length>8)
@@ -327,9 +330,27 @@
             }
 
             document.getElementById("exa0").innerHTML=""+exa;
-            if(document.getElementById("sub").value.length>0)
+            if(document.getElementById("sub").value.length>0&&pos==0)
         document.getElementById("exa").removeAttribute("disabled");
         });
-    </script>    
+var i8=0;
+ document.getElementById("pos").addEventListener("click",function()
+ {
+     if(i8==0)
+     {
+     document.getElementById("exa").setAttribute("disabled","disabled");
+     i8=1;
+     pos=1;
+     console.log("on")
+     }
+     else if(i8==1)
+     {
+         pos=0;
+     document.getElementById("exa").removeAttribute("disabled");
+     console.log("off")
+     i8=0;
+     }
+ });
+ </script>    
 </body>
 </html>
