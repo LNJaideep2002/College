@@ -41,7 +41,7 @@
                   </ul>
             </div>
           </div>
-          <div class="upload">
+          <div class="upload" style="padding-bottom: 10px;margin-bottom: 10px;">
               <h3>Generate file</h3>
               <form action="/generate" method="POST">
                 <label for="batch">Batch :</label>
@@ -71,7 +71,7 @@
                 <input type="text" id="sub" list="sub0" disabled="disabled" name="subject" autocomplete="off" required="required">
                 <datalist id="sub0"></datalist>          
                 <br> 
-                <button type="submit" style="margin: 30px 0px 0px 240px">Generate</button>
+                <button type="submit" style="margin: 20px 0px 0px 240px">Generate</button>
                 <a href="" id="download">File Generated  <i class="fas fa-download"></i></a>
             </form>
           </div>
@@ -85,12 +85,12 @@
         var file1="";
         for(i=1;i<filename1.length-1;i++)
             file1+=filename1[i]+"_";
-            
+           filename="jai2021_2017-2021_Semester 1_Communicative English_iae1.xlsx";
         if(st=="1")
         {
             document.getElementById("download").setAttribute("href","./"+filename);
             console.log("./"+filename);
-            document.getElementById("download").setAttribute("download","sam.pdf");
+            document.getElementById("download").setAttribute("download","jai2021_2017-2021_Semester 1_Communicative English_iae1.xlsx");
         }    
         if(st=="0")
         document.getElementById("download").setAttribute("class","download12");
