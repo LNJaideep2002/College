@@ -3,6 +3,7 @@ var mongoose=require('mongoose');
 var xl =require("xlsx");
 var ejs=require("ejs");
 var fs=require("fs");
+var excel=require("./excel");
 var app=express();
 var fileupload =require('express-fileupload');
 var bodya=require("body-parser");
@@ -25,6 +26,7 @@ var user={
     name:"",
     post:"",
 }
+var generatedfile="";
 app.listen(6500,function()
 {
     console.log("server stated");
@@ -120,9 +122,9 @@ app.post("/password",function (req,res){
             console.log("updated");
             if(user.username=="admin2021")
             {
-                res.render("achange",{...user,stats:1});
+                res.render("achange",{...user,stats:1}); //stats password change successfully
             }else{
-                res.render("uchange",{...user,stats:1})
+                res.render("uchange",{...user,stats:1}) //stats password change successfully
             }
 
         })
@@ -138,20 +140,59 @@ app.get("/generatefile",function(req,res){
             batch.push(data[0].subject[i].split("#")[0]);
             semester.push(data[0].subject[i].split("#")[1]);
         }
+        var filemis=[];
         model_batch.find({},function(err,data1){
             for(i=0;i<data1.length;i++)
                 for(j=0;j<batch.length;j++)
                     for(k=0;k<data1[i].exam.length;k++)
                         if(batch[j]==data1[i].exam[k].split("#")[0])
                         exam[i]+=data1[i].exam[k]+"@";
-                        res.render("generatefile",{exam,subject:data[0].subject,username:user.username,status:0,filename:"sample#",stat:0});
+                        res.render("generatefile",{exam,subject:data[0].subject,username:user.username,status:0,filename:"sample#",stat:0,filemis1:filemis
+                    });
         });
     });
 });
 app.post("/generate",function(req,res) {
-    // var filename=""+user.username+"#"+req.body.batch+"#"+req.body.semester+"#"+req.body.subject+".png";
-    var filename="sam.pdf";
-    console.log(filename);
+    model_batch.find({Semester:Number(req.body.semester.split(" ")[1])},function(err,data0)
+    {
+    var exa1=[];
+        for(i=0;i<data0[0].exam.length;i++)
+        if(data0[0].exam[i].split(req.body.batch+"#")[1]!=undefined)
+            exa1.push(data0[0].exam[i].split(req.body.batch+"#")[1]);
+            var file0=[];
+            for(i=0;i<data0[0].file.length;i++)
+            if(data0[0].file[i].split(user.username+"_"+req.body.batch+"_"+req.body.semester+"_"+req.body.subject+"_")[1].split(".")[0]!=undefined)
+            file0.push(data0[0].file[i].split(user.username+"_"+req.body.batch+"_"+req.body.semester+"_"+req.body.subject+"_")[1].split(".")[0]); 
+            var filemis=[];
+            var t=0;
+            for(i=0;i<exa1.length;i++)
+            { t=0;
+                for(j=0;j<file0.length;j++)
+                    if(exa1[i]==file0[j])
+                    {
+                        t=1;
+                    }
+                    if(t==0)
+                    filemis.push(exa1[i]+".xlsx file is missing");
+            }
+            console.log(filemis);
+            t=0;
+            for(i=0;i<data0[0].file.length;i++)
+                if(data0[0].file[i]==(user.username+"_"+req.body.batch+"_"+req.body.semester+"_"+req.body.subject+"_"+"pos.xlsx"))
+                t=1;
+                if(t==0)
+                filemis.push(req.body.batch+"_"+req.body.semester+"_"+req.body.subject+"_"+"pos.xlsx file is missing");
+                if(filemis.length==0)
+               generatedfile=excel.generatefile("./public/"+user.username+"_"+req.body.batch+"_"+req.body.semester+"_"+req.body.subject+"_"+"iae1.xlsx",
+               "./public/"+ user.username+"_"+req.body.batch+"_"+req.body.semester+"_"+req.body.subject+"_"+"iae2.xlsx",
+                "./public/"+user.username+"_"+req.body.batch+"_"+req.body.semester+"_"+req.body.subject+"_"+"iae3.xlsx",
+                "./public/"+user.username+"_"+req.body.batch+"_"+req.body.semester+"_"+req.body.subject+"_"+"iae4.xlsx",
+                "./public/"+user.username+"_"+req.body.batch+"_"+req.body.semester+"_"+req.body.subject+"_"+"iae5.xlsx",
+                "./public/"+user.username+"_"+req.body.batch+"_"+req.body.semester+"_"+req.body.subject+"_"+"model.xlsx",
+                "./public/"+user.username+"_"+req.body.batch+"_"+req.body.semester+"_"+req.body.subject+"_"+"universityExam.xlsx",
+                "./public/"+user.username+"_"+req.body.batch+"_"+req.body.semester+"_"+req.body.subject+"_"+"pos.xlsx",
+                req.body.target);
+              var filename="sendfile";
     var batch=[];
     var semester=[]
     var exam=["","","","","","","",""];
@@ -165,11 +206,15 @@ app.post("/generate",function(req,res) {
             for(i=0;i<data1.length;i++)
                 for(j=0;j<batch.length;j++)
                     for(k=0;k<data1[i].exam.length;k++)
-                        if(batch[j]==data1[i].exam[k].split("#")[0])
+                        if(batch[j]==data1[i].exam[k].split("#")[0]) 
                         exam[i]+=data1[i].exam[k]+"@";
-                        res.render("generatefile",{exam,subject:data[0].subject,username:user.username,stat:1,filename,status:1});
+                        if(filemis.length>0)
+                        res.render("generatefile",{exam,subject:data[0].subject,username:user.username,stat:0,filename,status:0,filemis1:filemis});//stat to bring file download icon // status to bring alert
+                        res.render("generatefile",{exam,subject:data[0].subject,username:user.username,stat:1,filename,status:1,filemis1:filemis});//stat to bring file download icon // status to bring alert
+                        
         });
     });
+});
 });
 app.get("/uploadfile",function(req,res) {
     var batch=[];
@@ -198,6 +243,7 @@ app.post("/uploading",function(req,res) {
     if(req.body.pos==undefined)
     {
         var filename=""+user.username+"_"+req.body.batch+"_"+req.body.semester+"_"+req.body.subject+"_"+req.body.exam+".xlsx";   
+        console.log(filename);
     }
     else
     var filename=""+user.username+"_"+req.body.batch+"_"+req.body.semester+"_"+req.body.subject+"_"+"pos.xlsx";
@@ -279,4 +325,8 @@ app.post("/aaddteacherdata",async function(req,res)
             res.render("aaddtecher",{st:1,username:user.username});
         }
     }
+});
+app.get("/sendfile",function(req,res)
+{
+    res.sendFile(__dirname+generatedfile);
 });
